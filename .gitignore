@@ -1,1 +1,5 @@
 /.env.local
+/user_data.json
+/chat_history.bak
+/chat_history.dat
+/chat_history.dir
