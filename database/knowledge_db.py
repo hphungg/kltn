@@ -1,11 +1,9 @@
+import streamlit as st
 from neo4j import GraphDatabase
-from dotenv import load_dotenv
-import os
 
-load_dotenv('.env.local') 
-URI = os.getenv('AURA_URI')
-USERNAME = os.getenv('AURA_USERNAME')
-PASSWORD = os.getenv('AURA_PASSWORD')
+URI = st.secrets["AURA_URI"]
+USERNAME = st.secrets["AURA_USERNAME"]
+PASSWORD = st.secrets["AURA_PASSWORD"]
 
 class Neo4jConnector:
     def __init__(self):

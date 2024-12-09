@@ -1,4 +1,4 @@
-/.env.local
+/.streamlit/secrets.toml
 /user_data.json
 /chat_history.bak
 /chat_history.dat

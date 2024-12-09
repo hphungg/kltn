@@ -1,6 +1,6 @@
-from pydantic import BaseModel, Field, validator
+from pydantic import BaseModel, Field
 from typing import List
-from database.knowledge_tags import knowledge_tags
+from assistant.knowledge_tags import knowledge_tags
 
 class Output(BaseModel):
     response: str = Field(description="Toàn bộ câu trả lời của trợ lý.")

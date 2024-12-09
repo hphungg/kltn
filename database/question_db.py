@@ -1,10 +1,9 @@
+import streamlit as st
+
 from pymongo.mongo_client import MongoClient
 from pymongo.server_api import ServerApi
-from dotenv import load_dotenv
-import os
 
-load_dotenv('.env.local') 
-URI = os.getenv('MONGO_URI')
+URI = st.secrets["MONGO_URI"]
 
 class MongoDBConnector:
     def __init__(self):
@@ -15,10 +14,10 @@ class MongoDBConnector:
     def get_exercises_by_tags(self, knowledge_list):
         collection = self.db['questions']
         query = {
-        "$or": [
-            {"knowledge_tags": {"$in": knowledge_list}},  
-            {"knowledge_tags": {"$size": 0}}             
-        ]
-    }
+            "$or": [
+                {"knowledge_tags": {"$in": knowledge_list}},  
+                {"knowledge_tags": {"$size": 0}}             
+            ]
+        }
         exercises = collection.find(query).limit(3)
         return list(exercises)

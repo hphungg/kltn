@@ -1,17 +1,11 @@
-from dotenv import load_dotenv 
-import os
+import streamlit as st
 from assistant.prompt import get_intent_prompt, get_user_prompt, INTENT_LIST, SUB_PROMPT_LIST
-from core.output_model import Output
-from database.user_database import load_user_data, save_user_data
-from database.knowledge_tags import knowledge_tags
+from assistant.output_model import Output
+from database.user_db import save_user
+from assistant.knowledge_tags import knowledge_tags
 
-load_dotenv('.env.local')
+API_KEY = st.secrets["API_KEY"]
 
-API_KEY = os.getenv('API_KEY')
-
-from langchain.chains import ConversationChain
-from langchain.chains.conversation.memory import ConversationEntityMemory
-from langchain.chains.conversation.prompt import ENTITY_MEMORY_CONVERSATION_TEMPLATE
 from langchain_openai import ChatOpenAI
 from langchain_community.callbacks import get_openai_callback
 
@@ -76,7 +70,12 @@ class Assistant:
         self.history_list.clear()
         self.history_list.append({"role": "system", "content": "Bạn là một trợ lý hỗ trợ học môn Nhập môn lập trình. Hãy tuân thủ chặt chẽ các yêu cầu từ tôi."})
         self.user_info["chat_history"] = self.history_list
-        save_user_data(self.user_info)
+        save_user(self.user_info)
+        return
+    
+    def update_user_info(self, user_info):
+        self.user_info = user_info
+        save_user(self.user_info)
         return
     
     def update_knowledge_list(self, updated_knowledge):
@@ -90,7 +89,10 @@ class Assistant:
     def get_knowledge_list(self):
         return self.user_info["knowledge_list"]
 
-    def generate_response(self, prompt: str):
+
+    def generate_response(self, prompt, user_info):
+        self.user_info = user_info
+
         intent = self.get_intent(prompt)
         user_prompt = self.get_user_prompt(self.user_info)
         sub_prompt = self.get_sub_prompt(intent)
@@ -110,12 +112,8 @@ class Assistant:
             structured_res = self.llm.invoke(self.history_list)
             self.history_list.append({"role": "assistant", "content": structured_res.response})
             self.user_info["chat_history"] = self.history_list
+            
             self.update_knowledge_list(structured_res.tags)
-            self.update_user_info(self.user_info)
             self.update_level()
+            self.update_user_info(self.user_info)
             return structured_res.response
-
-    def update_user_info(self, user_info):
-        self.user_info = user_info
-        save_user_data(user_info)
-        return

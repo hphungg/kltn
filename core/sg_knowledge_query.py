@@ -1,4 +1,4 @@
-from database.neo4j_connector import Neo4jConnector
+import streamlit as st
 
 def check_chapter(chapter, knowledge_list):
     chapter_tags = chapter.get('knowledge_tags', [])
@@ -7,8 +7,7 @@ def check_chapter(chapter, knowledge_list):
             return False
     return True
 
-def query_suggestions(knowledge_list):
-    db = Neo4jConnector()
+def knowledge_query(knowledge_list, db):
     suggestions = []
     chapter_index = 1
     flags = [False] * 10
@@ -23,7 +22,6 @@ def query_suggestions(knowledge_list):
                     if tag not in knowledge_list:
                         suggestions.append(section['s']['title'])
                         if len(suggestions) >= 3:
-                            db.close()
                             return suggestions
         next_chapters = db.query(f"MATCH (c1:Chapter {{id: {chapter_index}}})-[:LEARN_NEXT]->(c2:Chapter) RETURN c2")
         for next_chapter in next_chapters:
@@ -32,6 +30,4 @@ def query_suggestions(knowledge_list):
                 continue
             chapter_index = next_chapter_index
             break
-
-    db.close()
     return suggestions
