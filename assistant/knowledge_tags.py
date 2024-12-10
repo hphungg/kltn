@@ -1,4 +1,5 @@
 knowledge_tags = [
+    "Cơ bản",
     "Thư viện",
     "Cú pháp",
     "Nhập/xuất dữ liệu",

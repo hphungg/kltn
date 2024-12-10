@@ -10,7 +10,7 @@ from database.history_manager import load_chat_history, save_chat_history
 from database.knowledge_db import Neo4jConnector
 from database.question_db import MongoDBConnector
 
-USER_DATA_FILE = st.secrets["USER_DATA_FILE"]
+USER_DATA_FILE = st.secrets["USER_DATA_FILE"] + ".json"
 
 st.set_page_config(page_title="Nhập môn lập trình", page_icon="🤖")
 
@@ -26,8 +26,8 @@ def new_user_data():
     }
     
 @st.cache_resource
-def load_assistant(user_info):
-    return Assistant(user_info)
+def load_assistant(user_info, user_data_file):
+    return Assistant(user_info, user_data_file)
 
 @st.cache_resource
 def load_graphdb():
@@ -47,10 +47,10 @@ def load_user_data():
 user_info = load_user_data()
 graph_db = load_graphdb()
 mongo_db = load_mongo()
-assistant = load_assistant(user_info)
+assistant = load_assistant(user_info, USER_DATA_FILE)
 
 if "messages" not in st.session_state:
-    st.session_state.messages = load_chat_history()
+    st.session_state.messages = load_chat_history("1")
 
 for msg in st.session_state.messages:
     with st.chat_message(msg["role"]):
@@ -64,7 +64,7 @@ def handle_knowledge_suggestion(suggestion):
     st.session_state.messages.append({"role": "user", "content": my_prompt})
     full_response = assistant.generate_response(my_prompt, user_info)
     st.session_state.messages.append({"role": "assistant", "content": full_response})
-    save_chat_history(st.session_state.messages)
+    save_chat_history(st.session_state.messages, "1")
 
 def handle_question_suggestion(question):
     quest_content = f"Viết chương trình giải bài tập sau đây:\n### {question["title"]}\n\n{question["content"]}"
@@ -103,14 +103,14 @@ user_info["coding_level"] = st.sidebar.selectbox("Mức độ của câu trả l
 def clear_history():
     st.session_state.messages = []
     assistant.clear_chat_history()
-    save_chat_history([])
+    save_chat_history([], "1")
 
 def clear_all_history():
     st.session_state.messages = []
     assistant.clear_chat_history()
     user_info = new_user_data()
     assistant.update_user_info(user_info)
-    save_chat_history([])
+    save_chat_history([], "1")
 
 with st.sidebar:
     st.button("Xóa dữ liệu trò chuyện hiện tại", on_click=clear_history)
@@ -127,7 +127,7 @@ if prompt := st.chat_input("Hỏi một câu hỏi nào đó"):
         full_response = assistant.generate_response(prompt, user_info)
         message_placeholder.markdown(full_response)
     st.session_state.messages.append({"role": "assistant", "content": full_response})
-    save_chat_history(st.session_state.messages)
+    save_chat_history(st.session_state.messages, "1")
     
 
 

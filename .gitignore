@@ -1,5 +1,9 @@
 /.streamlit/secrets.toml
 /user_data.json
-/chat_history.bak
-/chat_history.dat
-/chat_history.dir
+/user_data_1.json
+/chat_history_1.bak
+/chat_history_1.dat
+/chat_history_1.dir
+/chat_history_2.bak
+/chat_history_2.dat
+/chat_history_2.dir
