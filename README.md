@@ -11,8 +11,8 @@ Repo này là một phần trong khóa luận tốt nghiệp của mình. Ứng 
 **Hướng dẫn cài đặt**:  
    - Clone repo về máy:  
      ```bash
-     git clone https://github.com/your-username/your-repo-name.git
-     cd your-repo-name
+     git clone https://github.com/hphungg/kltn.git
+     cd kltn
      ```  
    - Cài đặt các thư viện cần thiết:  
      ```bash
